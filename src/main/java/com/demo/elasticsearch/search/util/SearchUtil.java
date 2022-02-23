@@ -1,6 +1,7 @@
 package com.demo.elasticsearch.search.util;
 
 import com.demo.elasticsearch.search.SearchRequestDTO;
+import com.demo.elasticsearch.service.ShipmentServiceDemo;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
@@ -8,13 +9,12 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
 public class SearchUtil {
     private SearchUtil() {}
-
+ShipmentServiceDemo jii;
     public static SearchRequest buildSearchRequest(final String indexName,
                                                    final SearchRequestDTO dto) {
         try {
@@ -30,7 +30,7 @@ public class SearchUtil {
             if (dto.getSortBy() != null) {
                 builder = builder.sort(
                         dto.getSortBy(),
-                        dto.getOrder() != null ? dto.getOrder() : SortOrder.ASC
+                        dto.getOrder() != null ? dto.getOrder() : SortOrder.DESC
                 );
             }
 
@@ -49,17 +49,17 @@ public class SearchUtil {
         }
 
         final List<String> fields = dto.getFields();
-        if (CollectionUtils.isEmpty(fields)) {
-            return null;
-        }
+//        if (CollectionUtils.isEmpty(fields)) {
+//            return null;
+//        }
 
-        if (fields.size() > 1) {
+        if (fields.size() <=0) {
             final MultiMatchQueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(dto.getSearchTerm())
                     .type(MultiMatchQueryBuilder.Type.MOST_FIELDS)
                     .operator(Operator.OR).analyzer("keyword");
 
             fields.forEach(queryBuilder::field);
-
+            System.out.println("inside zero");
             return queryBuilder;
         }
 
